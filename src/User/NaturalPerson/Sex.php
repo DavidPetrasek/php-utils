@@ -2,20 +2,20 @@
 namespace Utils\User\NaturalPerson;
 
 
-enum Gender :int
+enum Sex :int
 {
-    case MAN = 1;
+    case MALE = 1;
     case FEMALE = 2;
         
     static function fromString ($string) : ?self
     {
         switch ($string)
         {
-            case 'man':
-                return Gender::MAN;
+            case 'male':
+                return Sex::MALE;
                 break;
             case 'female':
-                return Gender::FEMALE;
+                return Sex::FEMALE;
                 break;
                 
             default:

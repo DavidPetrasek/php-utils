@@ -2,7 +2,7 @@
 namespace Utils\User;
 
 
-enum AccountStatus :int
+enum AccountState :int
 {
     case REGISTRATION_INCOMPLETE = 1;
     case ACTIVE = 2;
