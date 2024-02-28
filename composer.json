@@ -1,6 +1,6 @@
 {
     "name": "psys/utils",
-    "description": "General purpose set of utilities for web apps.",
+    "description": "General purpose set of utilities for web apps",
     "type": "library",
     "license": "MIT",
     "autoload": {
