@@ -29,7 +29,7 @@ class FileUtil
         return substr($path, 0, -$pozicePripony);
     }
     
-    public function vytvoritNahled ($soubor, $adresar)
+    public function createThumbnail ($soubor, $adresar)
     {
         if ($soubor['mimeType'] !== 'application/pdf' && $soubor['mimeType'] !== 'image/jpeg' && $soubor['mimeType'] !== 'image/png') {return;}
         
@@ -54,7 +54,7 @@ class FileUtil
             
             $imagick->writeImage($filenameNoExt.'_nahled.jpg');
         }
-        catch (Exception $e)
+        catch (\Exception $e)
         {
             $this->vLogger->error("Výjimka Imagick při vytváření náhledu (u souboru $souborCesta)", [$exception->getMessage()]);
         }

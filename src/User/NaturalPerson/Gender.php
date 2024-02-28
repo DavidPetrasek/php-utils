@@ -1,21 +1,21 @@
 <?php
-namespace Utils\Uzivatel\FyzickaOsoba;
+namespace Utils\User\NaturalPerson;
 
 
-enum Pohlavi :int
+enum Gender :int
 {
-    case MUZ = 1;
-    case ZENA = 2;
+    case MAN = 1;
+    case FEMALE = 2;
         
     static function fromString ($string) : ?self
     {
         switch ($string)
         {
-            case 'muž':
-                return Pohlavi::MUZ;
+            case 'man':
+                return Gender::MAN;
                 break;
-            case 'žena':
-                return Pohlavi::ZENA;
+            case 'female':
+                return Gender::FEMALE;
                 break;
                 
             default:

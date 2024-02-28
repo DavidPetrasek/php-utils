@@ -1,6 +1,9 @@
 <?php 
 namespace Utils;
 
+/**
+ * Used for returning a result of a function or method.
+ */
 class Result
 {    
     private bool $status;

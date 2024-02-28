@@ -1,5 +1,5 @@
 <?php
-namespace Utils\Cr;
+namespace Territory\CzechRepublic;
 
 
 enum Kraj :int
