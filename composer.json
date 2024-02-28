@@ -1,0 +1,21 @@
+{
+    "name": "psys/utils",
+    "description": "General purpose set of utilities for web apps",
+    "type": "library",
+    "license": "MIT",
+    "autoload": {
+        "psr-4": {
+            "Psys\\Utils\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "David Petrásek",
+            "email": "davidpetrasek@hotmail.cz"
+        }
+    ],
+    "minimum-stability": "stable",
+    "require": {
+        "psr/log": "^3.0"
+    }
+}
