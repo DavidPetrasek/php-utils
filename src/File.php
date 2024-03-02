@@ -1,5 +1,5 @@
 <?php 
-namespace Utils;
+namespace Psys\Utils;
 
 use Psr\Log\LoggerInterface;
 

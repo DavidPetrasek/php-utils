@@ -1,5 +1,5 @@
 <?php
-namespace Utils\User;
+namespace Psys\Utils\User;
 
 
 enum AccountState :int

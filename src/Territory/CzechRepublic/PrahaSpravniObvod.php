@@ -1,5 +1,5 @@
 <?php
-namespace Utils\Territory\CzechRepublic;
+namespace Psys\Utils\Territory\CzechRepublic;
 
 
 enum PrahaSpravniObvod :int

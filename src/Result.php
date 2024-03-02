@@ -1,5 +1,5 @@
 <?php 
-namespace Utils;
+namespace Psys\Utils;
 
 /**
  * Used for returning a result of a function or method.

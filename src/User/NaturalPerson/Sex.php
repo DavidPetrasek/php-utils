@@ -1,5 +1,5 @@
 <?php
-namespace Utils\User\NaturalPerson;
+namespace Psys\Utils\User\NaturalPerson;
 
 
 enum Sex :int
