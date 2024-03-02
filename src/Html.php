@@ -1,7 +1,7 @@
 <?php 
 namespace Utils;
 
-class HtmlUtil
+class Html
 {    
     public function attrs ($attry)
     {

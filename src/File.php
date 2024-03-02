@@ -4,7 +4,7 @@ namespace Utils;
 use Psr\Log\LoggerInterface;
 
 
-class FileUtil
+class File
 {    
     function __construct
     (
