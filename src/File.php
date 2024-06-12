@@ -22,12 +22,17 @@ class File
         return 'data:' . $type . ';base64,' . base64_encode(file_get_contents($absPath));
     }
     
-    public function pathRemoveExtension ($path)
+    public function pathRemoveExtension (string $path) : string
     {
         $pozicePripony = strlen($path) - strrpos($path, '.');   //echo '<br>$pozicePripony: '.$pozicePripony;
         
         return substr($path, 0, -$pozicePripony);
     }
+
+    // public function pathGetExtension (string $path) : string
+    // {
+    //     return pathinfo($path, PATHINFO_EXTENSION);
+    // }
     
     public function createThumbnail ($soubor, $adresar)
     {

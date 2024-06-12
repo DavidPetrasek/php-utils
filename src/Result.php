@@ -9,10 +9,7 @@ class Result
     private bool $status;
     private string $message;
 
-    function __construct
-    (
-        $status, $message = ''
-    )
+    function __construct (bool $status, string $message = '')
     {
         $this->status = $status;
         $this->message = $message;
