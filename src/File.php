@@ -1,18 +1,9 @@
 <?php 
 namespace Psys\Utils;
 
-use Psr\Log\LoggerInterface;
-
 
 class File
-{    
-    function __construct
-    (
-        private $projectDir,
-        private LoggerInterface $vLogger,
-    )
-    {}
-    
+{
     public function getDataURI($absPath)
     {
         if (!file_exists($absPath)) {return '';}
@@ -29,42 +20,129 @@ class File
         return substr($path, 0, -$pozicePripony);
     }
 
-    // public function pathGetExtension (string $path) : string
-    // {
-    //     return pathinfo($path, PATHINFO_EXTENSION);
-    // }
-    
-    public function createThumbnail ($soubor, $adresar)
+    public function pathGetExtension (string $path) : string
     {
-        if ($soubor['mimeType'] !== 'application/pdf' && $soubor['mimeType'] !== 'image/jpeg' && $soubor['mimeType'] !== 'image/png') {return;}
+        return pathinfo($path, PATHINFO_EXTENSION);
+    }
+    
+    /**
+     * Creates a JPEG thumbnail from PDF, PNG or JPG
+     * 
+     * @param string $inputFilePath - absolute path to the input file
+     * @param string $thumbPath - absolute path where the thumbnail will be saved
+     */
+    public function createThumbnail (string $inputFilePath, string $thumbPath, int $resolution = 150, int $quality = 82) : void
+    {
+        $allowedMimeTypes = ['image/jpeg', 'image/png', 'application/pdf'];
+        $finfo = new \finfo(FILEINFO_MIME);
+        $inputFileMimeType = $finfo->file($inputFilePath);
+
+        if (!in_array($inputFileMimeType, $allowedMimeTypes))
+        {
+            throw new \Exception('Invalid mime type');
+        }
+     
+        $imagick = new \Imagick();
+        $imagick->setResolution( $resolution, $resolution );
+        $imagick->readImage( $inputFilePath );
         
-        $souborCesta = $this->projectDir.$adresar.$soubor['nameFileSystem'];
+        $imagick->setImageFormat('jpeg');
+        $imagick->setImageCompression(\Imagick::COMPRESSION_JPEG);
+        $imagick->setImageCompressionQuality($quality);
         
-        try
+        if ($inputFileMimeType === 'image/png')
+        {
+            $imagick = $imagick->mergeImageLayers(\Imagick::LAYERMETHOD_FLATTEN );
+        }
+        
+        $imagick->writeImage($thumbPath);
+    }
+
+    /**
+     *  Strip metadata from JPEG, PNG, PDF, MP3 or MP4 files
+     * 
+     *  @param string $filePath - absolute path of the file
+     */
+    public function stripMetadata (string $filePath) : void
+    {
+        $finfo = new \finfo(FILEINFO_MIME);
+        $mimeType = $finfo->file($filePath);
+
+        if ($mimeType === 'image/jpeg' || $mimeType === 'image/png') 
         {
             $imagick = new \Imagick();
-            $imagick->setResolution( 150, 150 );
-            $imagick->readImage( $souborCesta );
+            $imagick->readImage( $filePath );
             
-            $imagick->setImageFormat('jpeg');
-            $imagick->setImageCompression(\Imagick::COMPRESSION_JPEG);
-            $imagick->setImageCompressionQuality(82);
+            // Keep color profile
+            $profiles = $imagick->getImageProfiles("icc", true);
+            $imagick->stripImage();
+            if ( !empty($profiles) ) {$imagick->profileImage("icc", $profiles['icc']);}
             
-            if ($soubor['mimeType'] === 'image/png')
-            {
-                $imagick = $imagick->mergeImageLayers(\Imagick::LAYERMETHOD_FLATTEN );
-            }
-            
-            $filenameNoExt = $this->pathRemoveExtension($souborCesta);
-            
-            $imagick->writeImage($filenameNoExt.'_nahled.jpg');
-        }
-        catch (\Exception $e)
-        {
-            $this->vLogger->error("Výjimka Imagick při vytváření náhledu (u souboru $souborCesta)", [$exception->getMessage()]);
+            $imagick->writeImage($filePath);
         }
         
-        //         return $blob;
+        else if ($mimeType === 'application/pdf')
+        {
+            $imagick = new \Imagick();
+            $imagick->setResolution(250, 250);
+            $imagick->readImage( $filePath );                
+//          $pages = (int)$imagick->getNumberImages(); 
+            
+            // Save all pages as temporary JPGs
+            $absPathsTemp = [];
+            foreach ($imagick as $i => $im) 
+            {
+                $im->setImageFormat('jpeg');
+                $im->setImageCompression(\Imagick::COMPRESSION_JPEG);
+                $im->setImageCompressionQuality(80);
+
+                $absPath = $this->filesystem->tempnam(sys_get_temp_dir(), '', '.jpg');
+                
+                $im->writeImage($absPath);
+                $absPathsTemp[] = $absPath;
+            }                
+
+            $imagick->clear();
+            
+            // New PDF from temporary JPGs
+            $imagick = new \Imagick($absPathsTemp);
+            $imagick->setImageFormat('pdf');
+            $imagick->writeImages($filePath, true); 
+            $imagick->clear();
+            
+            // Remove temporary JPGs
+            $this->filesystem->remove($absPathsTemp);
+        }
+        
+        else if ($mimeType === 'video/mp4' || $mimeType === 'audio/mpeg')
+        {
+            $extension = $mimeType === 'video/mp4' ? 'mp4' : 'mp3';
+
+            $process = new Process( //TODO remove Process dependency
+                [
+                    "/usr/bin/ffmpeg",
+                    '-i', 
+                    $filePath, 
+                    '-map_metadata', 
+                    '-1', 
+                    '-c:v', 
+                    'copy',
+                    '-c:a',
+                    'copy',
+                    $filePath.'_ffmpeg_output.'.$extension
+                ]);
+            $process->run();
+            
+            // executes after the command finishes
+            if (!$process->isSuccessful()) 
+            {
+                throw new ProcessFailedException($process);
+            }
+            else
+            {
+                $this->filesystem->rename($filePath.'_ffmpeg_output.'.$extension, $filePath, true);
+            }
+        }
     }
 }
 
