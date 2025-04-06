@@ -34,7 +34,7 @@ class File
     public function createThumbnail (string $inputFilePath, string $thumbPath, int $resolution = 150, int $quality = 82) : void
     {
         $allowedMimeTypes = ['image/jpeg', 'image/png', 'application/pdf'];
-        $finfo = new \finfo(FILEINFO_MIME);
+        $finfo = new \finfo(FILEINFO_MIME_TYPE);
         $inputFileMimeType = $finfo->file($inputFilePath);
 
         if (!in_array($inputFileMimeType, $allowedMimeTypes))
