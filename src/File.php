@@ -65,7 +65,7 @@ class File
      */
     public function stripMetadata (string $filePath) : void
     {
-        $finfo = new \finfo(FILEINFO_MIME);
+        $finfo = new \finfo(FILEINFO_MIME_TYPE);
         $mimeType = $finfo->file($filePath);
 
         if ($mimeType === 'image/jpeg' || $mimeType === 'image/png') 
